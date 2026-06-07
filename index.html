@@ -3,382 +3,140 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hariom Modder - Premium MODs Hub</title>
+  <title>Login - Hariom Modder Hub</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root {
-      --bg: #0a0a0f; --card: #161b22; --text: #e6edf3; --accent: #00d9ff;
-      --accent-hover: #00b8d9; --border: #21262d; --star: #f1c40f; --danger: #da3633;
-      --glow: #00d9ff;
-    }
-    [data-theme="light"] {
-      --bg: #f0f6ff; --card: #ffffff; --text: #1f2328; --accent: #0066ff;
-      --accent-hover: #0052cc; --border: #d0d7de; --star: #f39c12; --danger: #cf222e;
-      --glow: #0066ff;
-    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg); color: var(--text); transition: all 0.3s ease; min-height: 100vh;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 20px;
     }
-    #particles-js { position: fixed; width: 100%; height: 100%; z-index: -1; }
-    .container { max-width: 1400px; margin: 0 auto; padding: 20px; position: relative; }
-    
-    .trending { background: linear-gradient(90deg, #00d9ff, #ff0080); padding: 12px; text-align: center; 
-      margin: -20px -20px 20px -20px; font-weight: 700; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
-    
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
-    .logo-section { display: flex; align-items: center; gap: 15px; }
-    .logo { width: 70px; height: 70px; border-radius: 12px; box-shadow: 0 0 25px var(--glow); 
-      animation: glow 2s ease-in-out infinite alternate; }
-    @keyframes glow { from { box-shadow: 0 0 20px var(--glow); } to { box-shadow: 0 0 35px var(--glow); } }
-    
-    h1 { font-size: 2.8rem; background: linear-gradient(90deg, #00d9ff, #ff0080, #00d9ff);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradient 3s ease infinite; background-size: 200% 200%; }
-    @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    .tagline { opacity: 0.8; font-size: 0.95rem; margin-top: 5px; }
-    
-    .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    .search { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--card); color: var(--text); width: 250px; font-size: 16px; }
-    .filter-btn, .theme-btn, .lang-btn, .donate-btn {
-      padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--card); color: var(--text); cursor: pointer; font-size: 16px; transition: all 0.2s;
+    .login-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px; padding: 40px 30px;
+      width: 100%; max-width: 400px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
-    .donate-btn { background: linear-gradient(45deg, #00d9ff, #ff0080); border: none; font-weight: 700; }
-    .donate-btn:hover { transform: scale(1.05); }
+    .logo { text-align: center; margin-bottom: 10px; }
+    .logo img { width: 70px; height: 70px; border-radius: 12px; }
+    h1 { color: #fff; text-align: center; font-size: 2rem; margin-bottom: 5px; }
+    .subtitle { color: rgba(255, 255, 255, 0.7); text-align: center; 
+      margin-bottom: 30px; font-size: 0.95rem; }
     
-    .categories { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 10px; }
-    .category { padding: 8px 16px; background: var(--card); border: 1px solid var(--border); 
-      border-radius: 20px; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
-    .category.active, .category:hover { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 15px var(--glow); }
-    
-    .featured { background: var(--card); border: 2px solid var(--accent); border-radius: 16px;
-      padding: 20px; margin-bottom: 30px; display: flex; gap: 20px; align-items: center; position: relative;
-      box-shadow: 0 0 30px rgba(0, 217, 255, 0.2); }
-    .featured-badge { background: var(--accent); color: #000; padding: 6px 12px; border-radius: 6px; 
-      font-weight: 700; font-size: 14px; position: absolute; top: -12px; left: 20px; }
-    
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 25px; }
-    .app-card {
-      background: rgba(22, 27, 34, 0.8); border: 1px solid var(--border); border-radius: 16px;
-      padding: 20px; transition: all 0.3s; backdrop-filter: blur(10px); position: relative;
+    .input-group { position: relative; margin-bottom: 20px; }
+    .input-field {
+      width: 100%; padding: 15px 45px 15px 15px; border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1); 
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff; font-size: 16px; outline: none;
+      transition: all 0.3s;
     }
-    .app-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0, 217, 255, 0.3); border-color: var(--accent); }
-    .premium-badge { position: absolute; top: 15px; right: 15px; background: linear-gradient(45deg, #f1c40f, #e67e22);
-      color: #000; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-    .safe-badge { position: absolute; top: 15px; left: 15px; background: var(--accent); 
-      color: #000; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-    
-    .app-header { display: flex; gap: 15px; margin-bottom: 15px; }
-    .app-icon { width: 70px; height: 70px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-    .app-info h3 { font-size: 1.4rem; margin-bottom: 5px; }
-    .app-meta { font-size: 0.9rem; opacity: 0.7; display: flex; gap: 15px; flex-wrap: wrap; }
-    .rating { color: var(--star); cursor: pointer; }
-    
-    .tags { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
-    .tag { background: var(--border); padding: 4px 10px; border-radius: 20px; font-size: 12px; }
-    
-    .video-preview { width: 100%; height: 200px; border-radius: 8px; margin: 15px 0; background: #000; }
-    .screenshots { display: flex; gap: 10px; overflow-x: auto; margin: 15px 0; padding-bottom: 10px; }
-    .screenshots img { height: 120px; border-radius: 8px; cursor: pointer; }
-    
-    .changelog { background: var(--bg); padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 0.9rem; }
-    .changelog h4 { margin-bottom: 8px; color: var(--accent); }
-    
-    .app-actions { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; }
-    .download-btn {
-      padding: 14px; background: var(--accent); color: #000; text-align: center;
-      border-radius: 8px; text-decoration: none; font-weight: 700; transition: all 0.2s;
-      border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    .input-field::placeholder { color: rgba(255, 255, 255, 0.5); }
+    .input-field:focus { 
+      border-color: #667eea; 
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
     }
-    .download-btn:hover { background: var(--accent-hover); transform: scale(1.02); box-shadow: 0 0 20px var(--glow); }
-    .icon-btn { padding: 14px; background: var(--card); border: 1px solid var(--border);
-      border-radius: 8px; cursor: pointer; color: var(--text); }
-    .icon-btn.saved { color: var(--danger); }
+    .input-icon {
+      position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.5); font-size: 18px;
+    }
     
-    .comments { margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px; }
-    .comment { background: var(--bg); padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem; }
-    .comment-stars { color: var(--star); font-size: 0.8rem; }
+    .login-btn {
+      width: 100%; padding: 15px; border-radius: 12px; border: none;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
+      transition: all 0.3s; margin-top: 10px;
+    }
+    .login-btn:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
     
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-      background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
-    .modal-content { background: var(--card); padding: 30px; border-radius: 16px; text-align: center; max-width: 400px; 
-      border: 2px solid var(--accent); box-shadow: 0 0 40px var(--glow); }
-    .qr-img { width: 250px; height: 250px; margin: 20px auto; border-radius: 12px; }
+    .links { text-align: center; margin-top: 20px; color: rgba(255, 255, 255, 0.7); }
+    .links a { color: #fff; text-decoration: none; font-size: 0.9rem; }
+    .links a:hover { color: #667eea; }
+    .divider { margin: 0 8px; }
+    .active-account { text-align: center; margin-top: 15px; color: rgba(255, 255, 255, 0.7); }
     
-    .leaderboard { background: var(--card); border: 1px solid var(--border); border-radius: 16px; 
-      padding: 20px; margin-top: 40px; }
-    .leaderboard h3 { margin-bottom: 15px; }
-    .leader-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
-    
-    .stats { display: flex; justify-content: space-between; margin-top: 15px; font-size: 0.85rem; opacity: 0.7; }
-    .footer { text-align: center; margin-top: 60px; opacity: 0.9; padding: 30px; 
-      background: var(--card); border-radius: 16px; border: 1px solid var(--border); }
-    .footer-logo { width: 100px; height: 100px; margin: 0 auto 15px; border-radius: 12px; 
-      box-shadow: 0 0 30px var(--glow); }
-    .footer h3 { color: var(--accent); margin-bottom: 10px; font-size: 2rem; }
-    
-    .toast { position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: #000;
-      padding: 15px 20px; border-radius: 8px; display: none; z-index: 1001; font-weight: 700; }
-    
-    @media (max-width: 600px) {
-      h1 { font-size: 2rem; } .search { width: 100%; } .grid { grid-template-columns: 1fr; }
-      .featured { flex-direction: column; } .logo-section { flex-direction: column; text-align: center; }
+    .whatsapp-popup {
+      position: fixed; bottom: 20px; right: 20px;
+      background: #25D366; border-radius: 12px; padding: 15px;
+      display: flex; align-items: center; gap: 12px; 
+      box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+      animation: slideUp 0.5s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } }
+    .whatsapp-popup .close { cursor: pointer; color: #fff; font-size: 20px; }
+    .whatsapp-text { color: #fff; }
+    .whatsapp-text strong { display: block; font-size: 0.95rem; }
+    .whatsapp-text span { font-size: 0.8rem; opacity: 0.9; }
+    .join-btn {
+      background: #fff; color: #25D366; padding: 8px 16px; border-radius: 20px;
+      border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;
     }
   </style>
 </head>
 <body>
-  <div class="trending">🔥 TRENDING: 100,000+ MOD Downloads This Month! 🔥</div>
-  <div id="particles-js"></div>
-  <div class="container">
-    <div class="header">
-      <div class="logo-section">
-        <img src="logo.png" class="logo" alt="Hariom Modder">
-        <div>
-          <h1>HARIOM MODDER</h1>
-          <p class="tagline">👑 Premium MODs | No Ads | All Unlocked 👑</p>
-        </div>
-      </div>
-      <div class="controls">
-        <input type="text" class="search" placeholder="🔍 Search MODs..." id="searchInput">
-        <select class="filter-btn" id="sortFilter">
-          <option value="downloads">Most Downloads</option>
-          <option value="rating">Top Rated</option>
-          <option value="new">Newest</option>
-        </select>
-        <button class="donate-btn" onclick="showDonate()"><i class="fas fa-heart"></i> Donate</button>
-        <button class="theme-btn" id="themeToggle">🌙</button>
-      </div>
+  <div class="login-card">
+    <div class="logo">
+      <img src="logo.png" alt="Hariom Modder">
     </div>
-
-    <div class="categories">
-      <div class="category active" data-cat="all">All MODs</div>
-      <div class="category" data-cat="apps">📱 Apps</div>
-      <div class="category" data-cat="games">🎮 Games</div>
-      <div class="category" data-cat="premium">💎 Premium</div>
-      <div class="category" data-cat="tools">🔧 Tools</div>
-    </div>
-
-    <div class="featured">
-      <div class="featured-badge">🔥 EXCLUSIVE MOD</div>
-      <img src="logo.png" style="width: 100px; height: 100px; border-radius: 16px;">
-      <div>
-        <h3>Hariom Modder Special Pack</h3>
-        <p>All premium apps MODDED by Hariom Rajput. Unlimited features, zero ads, 100% working!</p>
-        <a href="hariom-mod-pack.apk" class="download-btn" style="margin-top: 10px; width: 220px;">
-          <i class="fas fa-crown"></i> Download Pack
-        </a>
-      </div>
-    </div>
-
-    <div class="grid" id="appGrid">
-      <div class="app-card" data-name="pro editor mod" data-category="apps" data-downloads="35453" data-rating="5.0">
-        <div class="safe-badge"><i class="fas fa-shield-alt"></i> Verified</div>
-        <div class="premium-badge">MOD</div>
-        <div class="app-header">
-          <img src="https://via.placeholder.com/70/00d9ff/000000?text=MOD" class="app-icon" alt="App">
-          <div class="app-info">
-            <h3>Pro Editor MOD</h3>
-            <div class="app-meta">
-              <span>v2.1.0 MOD</span>
-              <span>28.4 MB</span>
-              <span class="rating">★★★★★ 5.0</span>
-            </div>
-          </div>
-        </div>
-        <div class="tags">
-          <span class="tag">MOD</span><span class="tag">Premium</span><span class="tag">No Ads</span><span class="tag">By Hariom</span>
-        </div>
-        <p>Premium unlocked by Hariom Modder. All paid features FREE. No watermark, 4K export, 500+ filters.</p>
-        
-        <iframe class="video-preview" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0"></iframe>
-        
-        <div class="screenshots">
-          <img src="https://via.placeholder.com/200x120/161b22/00d9ff?text=MOD+1" alt="">
-          <img src="https://via.placeholder.com/200x120/161b22/00d9ff?text=MOD+2" alt="">
-        </div>
-        
-        <div class="changelog">
-          <h4><i class="fas fa-bolt"></i> MOD Features by Hariom</h4>
-          - Premium Unlocked ✅<br>
-          - All Filters FREE ✅<br>
-          - No Ads + No Watermark ✅<br>
-          - Export 4K Quality ✅
-        </div>
-        
-        <div class="app-actions">
-          <a href="pro-editor-mod.apk" class="download-btn" onclick="trackDownload(this)">
-            <i class="fas fa-download"></i> <span class="dl-text">Download MOD</span>
-          </a>
-          <button class="icon-btn" onclick="showQR('pro-editor-mod.apk')"><i class="fas fa-qrcode"></i></button>
-          <button class="icon-btn" onclick="saveApp(this)"><i class="far fa-bookmark"></i></button>
-        </div>
-        
-        <div class="stats">
-          <span><i class="fas fa-download"></i> <span class="dl-count">35,453</span></span>
-          <span><i class="fas fa-clock"></i> Today</span>
-          <span><i class="fas fa-check-circle"></i> Working</span>
-        </div>
-        
-        <div class="comments">
-          <div class="comment">
-            <div class="comment-stars">★★★★★</div>
-            <strong>MOD Lover:</strong> Hariom bhai ka mod 100% working! Best modder 🔥👑
-          </div>
-          <button class="icon-btn" style="width: 100%; margin-top: 10px;" onclick="addComment()">
-            <i class="fas fa-comment"></i> Add Review
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="leaderboard">
-      <h3><i class="fas fa-trophy"></i> Top MODs by Hariom</h3>
-      <div class="leader-item"><span>1. Pro Editor MOD</span><span>35,453</span></div>
-      <div class="leader-item"><span>2. Spotify Premium MOD</span><span>28,921</span></div>
-      <div class="leader-item"><span>3. Netflix MOD</span><span>22,532</span></div>
-    </div>
-
-    <div class="leaderboard">
-      <h3><i class="fas fa-chart-line"></i> Download Stats</h3>
-      <canvas id="downloadChart" height="100"></canvas>
-    </div>
-
-    <div class="footer">
-      <img src="logo.png" class="footer-logo" alt="Hariom Modder">
-      <h3>👑 HARIOM RAJPUT MODDER 👑</h3>
-      <p>India's #1 MOD Provider | Premium Unlocked | 100% Safe & Working</p>
-      <p style="margin-top: 15px;">Total Downloads: <span id="totalDownloads">107,906</span> | 
-        <a href="#" onclick="showDonate()" style="color: var(--accent);">💰 Support Modder</a></p>
-      <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.7;">
-        Telegram: @HariomModder | YouTube: Hariom Modder Official<br>
-        © 2026 Hariom Rajput Modder. All MODs tested & verified.
-      </p>
-    </div>
-  </div>
-
-  <div class="modal" id="qrModal">
-    <div class="modal-content">
-      <h3><i class="fas fa-qrcode"></i> Scan to Download</h3>
-      <div id="qrcode"></div>
-      <button class="download-btn" style="margin-top: 20px;" onclick="closeQR()">Close</button>
-    </div>
-  </div>
-
-  <div class="modal" id="donateModal">
-    <div class="modal-content">
-      <h3><i class="fas fa-heart"></i> Support Hariom Modder</h3>
-      <p style="margin: 15px 0;">Scan QR to donate & support more MODs</p>
-      <img src="payment-qr.png" class="qr-img" alt="Payment QR">
-      <p style="font-size: 0.9rem; opacity: 0.8;">UPI / PhonePe / GPay / Paytm</p>
-      <button class="download-btn" style="margin-top: 20px;" onclick="closeDonate()">Thank You! 🙏</button>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-
-  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <script>
-    particlesJS('particles-js', { particles: { number: { value: 80 }, color: { value: '#00d9ff' }, opacity: { value: 0.4 },
-      size: { value: 3 }, line_linked: { enable: true, distance: 150, color: '#00d9ff', opacity: 0.3, width: 1 }},
-      interactivity: { events: { onhover: { enable: true, mode: 'repulse' }}} });
-
-    const hour = new Date().getHours();
-    const autoTheme = hour >= 19 || hour < 7 ? 'dark' : 'light';
-    const currentTheme = localStorage.getItem('theme') || autoTheme;
-    document.body.setAttribute('data-theme', currentTheme);
-    document.getElementById('themeToggle').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
-    document.getElementById('themeToggle').addEventListener('click', () => {
-      const newTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      document.body.setAttribute('data-theme', newTheme);
-      document.getElementById('themeToggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
-      localStorage.setItem('theme', newTheme);
-    });
-
-    function filterApps() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const sort = document.getElementById('sortFilter').value;
-      const activeCat = document.querySelector('.category.active').getAttribute('data-cat');
-      let apps = Array.from(document.querySelectorAll('.app-card'));
-      
-      apps.forEach(card => {
-        const name = card.getAttribute('data-name');
-        const cat = card.getAttribute('data-category');
-        const matchSearch = name.includes(query);
-        const matchCat = activeCat === 'all' || cat === activeCat;
-        card.style.display = matchSearch && matchCat ? 'block' : 'none';
-      });
-
-      apps.sort((a, b) => {
-        if(sort === 'downloads') return b.getAttribute('data-downloads') - a.getAttribute('data-downloads');
-        if(sort === 'rating') return b.getAttribute('data-rating') - a.getAttribute('data-rating');
-        return 0;
-      });
-      const grid = document.getElementById('appGrid');
-      apps.forEach(app => grid.appendChild(app));
-    }
+    <h1>Hariom Modder</h1>
+    <p class="subtitle">Premium MODs Portal</p>
     
-    document.getElementById('searchInput').addEventListener('input', filterApps);
-    document.getElementById('sortFilter').addEventListener('change', filterApps);
-    document.querySelectorAll('.category').forEach(cat => {
-      cat.addEventListener('click', function() {
-        document.querySelectorAll('.category').forEach(c => c.classList.remove('active'));
-        this.classList.add('active'); filterApps();
-      });
+    <form id="loginForm">
+      <div class="input-group">
+        <input type="text" class="input-field" placeholder="Email or Mobile Number" required>
+        <i class="fas fa-envelope input-icon"></i>
+      </div>
+      
+      <div class="input-group">
+        <input type="password" class="input-field" placeholder="Password" required>
+        <i class="fas fa-lock input-icon"></i>
+      </div>
+      
+      <button type="submit" class="login-btn">
+        Login Now
+      </button>
+    </form>
+    
+    <div class="links">
+      <a href="#">Forgot password?</a>
+      <span class="divider">•</span>
+      <a href="#">Create account</a>
+    </div>
+    
+    <div class="active-account">
+      <a href="#" style="color: rgba(255,255,255,0.7); text-decoration: none;">Active My Account</a>
+    </div>
+  </div>
+
+  <div class="whatsapp-popup" id="whatsappPopup">
+    <i class="fab fa-whatsapp" style="font-size: 32px; color: #fff;"></i>
+    <div class="whatsapp-text">
+      <strong>📢 Join Our Channel</strong>
+      <span>Instant updates & offers</span>
+    </div>
+    <button class="join-btn" onclick="window.open('https://wa.me/')">
+      <i class="fab fa-whatsapp"></i> Join
+    </button>
+    <span class="close" onclick="document.getElementById('whatsappPopup').style.display='none'">&times;</span>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Login System: Backend connect karna padega bhai 🔐');
     });
-
-    function showQR(link) {
-      document.getElementById('qrModal').style.display = 'flex';
-      document.getElementById('qrcode').innerHTML = '';
-      QRCode.toCanvas(document.getElementById('qrcode'), window.location.origin + '/' + link, { width: 200 });
-    }
-    function closeQR() { document.getElementById('qrModal').style.display = 'none'; }
-
-    function showDonate() { document.getElementById('donateModal').style.display = 'flex'; }
-    function closeDonate() { document.getElementById('donateModal').style.display = 'none'; }
-
-    function saveApp(btn) {
-      btn.classList.toggle('saved');
-      btn.innerHTML = btn.classList.contains('saved') ? '<i class="fas fa-bookmark"></i>' : '<i class="far fa-bookmark"></i>';
-      showToast(btn.classList.contains('saved') ? 'Added to MOD list!' : 'Removed from list');
-    }
-
-    function trackDownload(btn) {
-      const card = btn.closest('.app-card');
-      let count = parseInt(card.querySelector('.dl-count').textContent.replace(',', ''));
-      card.querySelector('.dl-count').textContent = (count + 1).toLocaleString();
-      btn.innerHTML = '<i class="fas fa-check"></i> Downloaded!';
-      setTimeout(() => { 
-        btn.innerHTML = '<i class="fas fa-download"></i> Download MOD';
-        showToast('Install: Enable Unknown Sources > Install APK > Enjoy MOD! 👑');
-      }, 2000);
-    }
-
-    function addComment() {
-      const comment = prompt('Review this MOD:');
-      if(comment) showToast('Thanks for review! Jai Hariom 🙏');
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.style.display = 'block';
-      setTimeout(() => { toast.style.display = 'none'; }, 3000);
-    }
-
-    new Chart(document.getElementById('downloadChart'), {
-      type: 'line',
-      data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{ label: 'Downloads', data: [5200, 7900, 11000, 14000, 9300, 12400, 15200], 
-          borderColor: '#00d9ff', backgroundColor: 'rgba(0, 217, 255, 0.1)', tension: 0.4, fill: true }]
-      },
-      options: { responsive: true, plugins: { legend: { display: false } } }
-    });
+    
+    // 5 sec baad popup hide kar de
+    setTimeout(() => {
+      document.getElementById('whatsappPopup').style.display = 'none';
+    }, 8000);
   </script>
 </body>
 </html>
