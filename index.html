@@ -1,328 +1,1673 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hariom MOD Hub</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    :root {
-      --bg: #0a0a0a;
-      --card: #111111;
-      --text: #00ff00;
-      --border: #00ff00;
-      --glow: 0 0 10px #00ff00;
-      --accent: #00ff88;
-    }
-    
-    body.light {
-      --bg: #f0f0f0;
-      --card: #ffffff;
-      --text: #008000;
-      --border: #008000;
-      --glow: 0 0 10px #008000;
-      --accent: #00aa00;
-    }
-    
-    body {
-      font-family: 'Courier New', monospace;
-      background: var(--bg);
-      color: var(--text);
-      transition: all 0.3s;
-    }
-    
-    /* Splash Screen */
-    .splash {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: #000; display: flex; align-items: center; justify-content: center;
-      flex-direction: column; z-index: 9999; animation: hideSplash 0.5s ease 3s forwards;
-    }
-    .splash-text {
-      font-size: 2rem; text-shadow: var(--glow); animation: flicker 1.5s infinite;
-    }
-    .loading-bar {
-      width: 200px; height: 4px; background: #222; margin-top: 20px;
-      border: 1px solid var(--border); position: relative; overflow: hidden;
-    }
-    .loading-bar::after {
-      content: ''; position: absolute; height: 100%; width: 40%;
-      background: var(--text); animation: loading 2s ease infinite;
-    }
-    @keyframes loading { 0%{left:-40%} 100%{left:100%} }
-    @keyframes flicker { 0%,100%{opacity:1} 50%{opacity:0.3} }
-    @keyframes hideSplash { to{opacity:0; visibility:hidden} }
-    
-    /* Matrix Background */
-    .matrix {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none; opacity: 0.08; z-index: 0;
-    }
-    .matrix-line {
-      position: absolute; width: 1px; height: 100%;
-      background: linear-gradient(transparent, var(--text), transparent);
-      animation: fall linear infinite;
-    }
-    @keyframes fall { from{transform:translateY(-100%)} to{transform:translateY(100%)} }
-    
-    /* Header */
-    .header {
-      background: var(--card); padding: 15px 20px; display: flex;
-      align-items: center; justify-content: space-between;
-      border-bottom: 1px solid var(--border); box-shadow: var(--glow);
-      position: sticky; top: 0; z-index: 100;
-    }
-    .menu-btn {
-      background: none; border: 1px solid var(--border); color: var(--text);
-      width: 40px; height: 40px; border-radius: 8px; cursor: pointer;
-      box-shadow: var(--glow);
-    }
-    .logo { font-size: 1.3rem; font-weight: bold; text-shadow: var(--glow); }
-    
-    /* Drawer */
-    .drawer {
-      position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
-      background: var(--card); border-right: 1px solid var(--border);
-      transition: 0.3s; z-index: 200; padding: 20px; box-shadow: var(--glow);
-    }
-    .drawer.open { left: 0; }
-    .drawer-header { margin-bottom: 30px; text-shadow: var(--glow); }
-    .drawer-item {
-      padding: 12px; margin: 8px 0; border: 1px solid var(--border);
-      border-radius: 8px; cursor: pointer; transition: 0.2s;
-    }
-    .drawer-item:hover { background: rgba(0,255,0,0.1); box-shadow: var(--glow); }
-    .overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7); z-index: 150; display: none;
-    }
-    .overlay.show { display: block; }
-    
-    /* Main */
-    .container { padding: 20px; max-width: 800px; margin: 0 auto; position: relative; z-index: 1; }
-    
-    .search-box {
-      width: 100%; padding: 15px; background: var(--card);
-      border: 1px solid var(--border); border-radius: 12px;
-      color: var(--text); font-family: inherit; font-size: 1rem;
-      box-shadow: var(--glow); margin-bottom: 25px;
-    }
-    
-    .upload-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 15px; padding: 30px; text-align: center;
-      box-shadow: var(--glow); margin-bottom: 20px;
-    }
-    
-    .file-input { display: none; }
-    
-    /* Glossy Green Button */
-    .glossy-btn {
-      background: linear-gradient(180deg, #00ff00 0%, #00cc00 50%, #009900 100%);
-      color: #000; border: none; padding: 15px 40px; border-radius: 12px;
-      font-family: inherit; font-size: 1rem; font-weight: bold; cursor: pointer;
-      position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,255,0,0.4);
-      transition: 0.3s; text-transform: uppercase; margin: 5px;
-    }
-    .glossy-btn::before {
-      content: ''; position: absolute; top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
-      transform: rotate(45deg); animation: shine 3s infinite;
-    }
-    .glossy-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,255,0,0.6); }
-    @keyframes shine { 0%{left:-50%} 100%{left:150%} }
-    
-    .apk-card {
-      background: rgba(0,255,0,0.05); padding: 15px; margin: 12px 0;
-      border-left: 3px solid var(--border); border-radius: 8px;
-      display: flex; align-items: center; gap: 15px; text-align: left;
-    }
-    .apk-icon {
-      width: 50px; height: 50px; background: var(--card);
-      border: 1px solid var(--border); border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; box-shadow: var(--glow);
-    }
-    .apk-info { flex: 1; }
-    .apk-name { font-weight: bold; margin-bottom: 5px; }
-    .apk-size { font-size: 0.85rem; opacity: 0.7; }
-    .download-btn {
-      background: var(--accent); color: #000; border: none;
-      padding: 8px 15px; border-radius: 6px; cursor: pointer;
-      font-family: inherit; font-weight: bold;
-    }
-    
-    .theme-toggle {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px; border: 1px solid var(--border); border-radius: 8px;
-    }
-    .switch {
-      width: 50px; height: 25px; background: #333; border-radius: 25px;
-      position: relative; cursor: pointer; border: 1px solid var(--border);
-    }
-    .switch::after {
-      content: ''; position: absolute; width: 21px; height: 21px;
-      background: var(--text); border-radius: 50%; top: 1px; left: 1px;
-      transition: 0.3s; box-shadow: var(--glow);
-    }
-    body.light .switch::after { left: 26px; }
-    
-    .stats {
-      display: grid; grid-template-columns: repeat(2,1fr); gap: 15px; margin-top: 20px;
-    }
-    .stat-box {
-      background: var(--card); border: 1px solid var(--border);
-      padding: 15px; border-radius: 10px; text-align: center; box-shadow: var(--glow);
-    }
-    .stat-num { font-size: 1.8rem; font-weight: bold; text-shadow: var(--glow); }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>HARIOM HARD MUSIC PUNCH · AIDE Pro Project</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0b0e14;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .project-header {
+            max-width: 900px;
+            width: 100%;
+            background: linear-gradient(145deg, #1a1f2a, #0f131c);
+            border-radius: 28px;
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(0, 255, 120, 0.15);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .project-header h1 {
+            color: #d0ffd0;
+            font-size: 1.9rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 20px rgba(0, 255, 120, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .project-header h1 small {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #7a8a8a;
+            background: rgba(0, 255, 120, 0.08);
+            padding: 4px 14px;
+            border-radius: 40px;
+            border: 1px solid rgba(0, 255, 120, 0.12);
+            letter-spacing: 0.3px;
+        }
+
+        .badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            margin-top: 12px;
+            color: #98b0b0;
+            font-size: 0.85rem;
+        }
+
+        .badge-row span {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4px 16px 4px 12px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .badge-row strong {
+            color: #b8f0d0;
+            font-weight: 600;
+        }
+
+        .file-grid {
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .file-card {
+            background: #141a24;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            transition: border 0.2s;
+        }
+
+        .file-card:hover {
+            border-color: rgba(0, 255, 120, 0.15);
+        }
+
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 22px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .file-header h2 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #c8e0d8;
+            letter-spacing: 0.2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-header .path {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: #5f7a7a;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+
+        .file-header .lang {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #4a7a6a;
+            background: rgba(0, 255, 120, 0.08);
+            padding: 2px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 255, 120, 0.08);
+        }
+
+        .file-body {
+            padding: 18px 22px 22px;
+            overflow-x: auto;
+        }
+
+        pre {
+            background: #0a0e16;
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Menlo', monospace;
+            font-size: 0.78rem;
+            line-height: 1.7;
+            color: #d4e4e0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            margin: 0;
+            max-height: 560px;
+            overflow-y: auto;
+        }
+
+        pre .k {
+            color: #ff8b8b;
+        }
+        pre .s {
+            color: #b8f0b0;
+        }
+        pre .n {
+            color: #c8e0d8;
+        }
+        pre .c {
+            color: #4f6f6f;
+            font-style: italic;
+        }
+        pre .m {
+            color: #f0c080;
+        }
+        pre .p {
+            color: #a0b8b8;
+        }
+        pre .x {
+            color: #90c8f0;
+        }
+        pre .str {
+            color: #b8f0b0;
+        }
+        pre .ann {
+            color: #f0a0a0;
+        }
+
+        .file-body .note {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #6a8a8a;
+            background: rgba(0, 255, 120, 0.04);
+            padding: 10px 16px;
+            border-radius: 10px;
+            border-left: 3px solid rgba(0, 255, 120, 0.2);
+        }
+
+        .file-body .note strong {
+            color: #a0d0c0;
+        }
+
+        @media (max-width: 600px) {
+            .project-header h1 {
+                font-size: 1.4rem;
+            }
+            .file-header {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .file-header .path {
+                font-size: 0.6rem;
+            }
+            pre {
+                font-size: 0.68rem;
+                padding: 12px 14px;
+            }
+        }
+
+        /* scrollbar */
+        pre::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        pre::-webkit-scrollbar-thumb {
+            background: #2a3a3a;
+            border-radius: 10px;
+        }
+        pre::-webkit-scrollbar-track {
+            background: #0a0e16;
+        }
+
+        .copy-btn {
+            background: rgba(0, 255, 120, 0.06);
+            border: 1px solid rgba(0, 255, 120, 0.1);
+            color: #7aaa9a;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .copy-btn:hover {
+            background: rgba(0, 255, 120, 0.12);
+            color: #b8f0d0;
+            border-color: rgba(0, 255, 120, 0.2);
+        }
+
+        .file-header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-divider {
+            max-width: 900px;
+            width: 100%;
+            margin: 24px 0 10px;
+            color: #2a3a3a;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding-bottom: 12px;
+            padding-left: 4px;
+        }
+    </style>
 </head>
 <body>
-  <!-- Splash -->
-  <div class="splash">
-    <div class="splash-text">> HARIOM MOD HUB_</div>
-    <div class="loading-bar"></div>
-  </div>
-  
-  <!-- Matrix -->
-  <div class="matrix" id="matrix"></div>
-  
-  <!-- Drawer -->
-  <div class="overlay" id="overlay" onclick="toggleDrawer()"></div>
-  <div class="drawer" id="drawer">
-    <div class="drawer-header"><h2>> MENU_</h2></div>
-    <div class="drawer-item"><i class="fas fa-home"></i> Dashboard</div>
-    <div class="drawer-item"><i class="fas fa-upload"></i> Upload APK</div>
-    <div class="drawer-item"><i class="fas fa-gamepad"></i> MOD Library</div>
-    <div class="drawer-item"><i class="fas fa-code"></i> Termux Scripts</div>
-    <div class="theme-toggle">
-      <span><i class="fas fa-moon"></i> Dark/Light</span>
-      <div class="switch" onclick="toggleTheme()"></div>
-    </div>
-  </div>
-  
-  <!-- Header -->
-  <div class="header">
-    <button class="menu-btn" onclick="toggleDrawer()"><i class="fas fa-bars"></i></button>
-    <div class="logo">MOD_HUB.EXE</div>
-    <div style="width:40px"></div>
-  </div>
-  
-  <!-- Main -->
-  <div class="container">
-    <input type="text" class="search-box" placeholder="> Search MODs, APKs, Scripts..." id="searchInput">
-    
-    <div class="upload-card">
-      <h2 style="margin-bottom:20px; text-shadow: var(--glow);">> UPLOAD_APK_FILES</h2>
-      <input type="file" id="fileInput" class="file-input" multiple accept=".apk,.txt,.csv,.zip">
-      <button class="glossy-btn" onclick="document.getElementById('fileInput').click()">
-        <i class="fas fa-upload"></i> SELECT APK
-      </button>
-      <button class="glossy-btn" onclick="uploadToServer()">
-        <i class="fas fa-cloud-upload-alt"></i> UPLOAD ALL
-      </button>
-      
-      <div class="stats">
-        <div class="stat-box">
-          <div class="stat-num" id="totalFiles">0</div>
-          <div>Total Files</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-num" id="totalSize">0 MB</div>
-          <div>Total Size</div>
-        </div>
-      </div>
-      
-      <div id="fileList" style="margin-top:20px;"></div>
-    </div>
-  </div>
 
-  <script>
-    let uploadedFiles = [];
-    
-    // Matrix Effect
-    const matrix = document.getElementById('matrix');
-    for(let i=0; i<50; i++) {
-      const line = document.createElement('div');
-      line.className = 'matrix-line';
-      line.style.left = Math.random()*100 + '%';
-      line.style.animationDuration = (Math.random()*3 + 2) + 's';
-      line.style.animationDelay = Math.random()*2 + 's';
-      matrix.appendChild(line);
+    <div class="project-header">
+        <h1>
+            🎵 HARIOM HARD MUSIC PUNCH
+            <small>v1.0 · AIDE Pro</small>
+        </h1>
+        <div class="badge-row">
+            <span>📦 <strong>com.hariom.hardpunch</strong></span>
+            <span>📱 <strong>AndroidX</strong></span>
+            <span>🎯 <strong>minSdk 21</strong></span>
+            <span>🎨 <strong>Glossy · Hard UI</strong></span>
+            <span>🟢 <strong>Green Bubble Splash</strong></span>
+        </div>
+        <div style="margin-top:6px; color:#4f6f6f; font-size:0.75rem;">
+            ⚡ Songs from <code style="background:#0a0e16;padding:2px 10px;border-radius:12px;color:#8ab8a8;">assets/</code> · Full player: Shuffle · Next · Prev · Pause
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 1. AndroidManifest.xml                                        -->
+    <!-- ============================================================ -->
+    <div class="file-grid">
+
+        <div class="file-card">
+            <div class="file-header" onclick="toggleBody(this)">
+                <h2>📄 AndroidManifest.xml</h2>
+                <div class="file-header-right">
+                    <span class="path">/app/src/main/</span>
+                    <span class="lang">manifest</span>
+                    <button class="copy-btn" onclick="event.stopPropagation();copyCode(this)">📋 Copy</button>
+                </div>
+            </div>
+            <div class="file-body">
+                <pre id="code-manifest">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hariom.hardpunch"&gt;
+
+    &lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+
+    &lt;application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.HardPunch"
+        android:usesCleartextTraffic="true"&gt;
+
+        &lt;activity
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Splash"&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name="android.intent.action.MAIN" /&gt;
+                &lt;category android:name="android.intent.category.LAUNCHER" /&gt;
+            &lt;/intent-filter&gt;
+        &lt;/activity&gt;
+
+        &lt;activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" /&gt;
+
+    &lt;/application&gt;
+
+&lt;/manifest&gt;</pre>
+                <div class="note">🔹 <strong>Launcher:</strong> SplashActivity → MainActivity · Internet for future streaming (optional)</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 2. SplashActivity.java                                        -->
+        <!-- ============================================================ -->
+        <div class="file-card">
+            <div class="file-header" onclick="toggleBody(this)">
+                <h2>☕ SplashActivity.java</h2>
+                <div class="file-header-right">
+                    <span class="path">/java/com/hariom/hardpunch/</span>
+                    <span class="lang">Java</span>
+                    <button class="copy-btn" onclick="event.stopPropagation();copyCode(this)">📋 Copy</button>
+                </div>
+            </div>
+            <div class="file-body">
+                <pre id="code-splash">package com.hariom.hardpunch;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.widget.FrameLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class SplashActivity extends AppCompatActivity {
+
+    private BubbleView bubbleView;
+    private View overlay;
+    private Handler handler = new Handler();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_splash);
+
+        bubbleView = findViewById(R.id.bubbleView);
+        overlay = findViewById(R.id.overlay);
+
+        // start bubble animation
+        bubbleView.startAnimation();
+
+        // fade out and go to MainActivity after 3.5s
+        handler.postDelayed(() -> {
+            // fade overlay
+            overlay.animate()
+                    .alpha(1f)
+                    .setDuration(600)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                            finish();
+                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                        }
+                    })
+                    .start();
+        }, 3200);
     }
-    
-    function toggleDrawer() {
-      document.getElementById('drawer').classList.toggle('open');
-      document.getElementById('overlay').classList.toggle('show');
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
+        if (bubbleView != null) {
+            bubbleView.stopAnimation();
+        }
     }
-    
-    function toggleTheme() {
-      document.body.classList.toggle('light');
-      localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+}</pre>
+                <div class="note">🟢 <strong>Splash</strong> shows <code>BubbleView</code> with floating green bubbles, then fades to MainActivity.</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 3. MainActivity.java                                          -->
+        <!-- ============================================================ -->
+        <div class="file-card">
+            <div class="file-header" onclick="toggleBody(this)">
+                <h2>☕ MainActivity.java</h2>
+                <div class="file-header-right">
+                    <span class="path">/java/com/hariom/hardpunch/</span>
+                    <span class="lang">Java</span>
+                    <button class="copy-btn" onclick="event.stopPropagation();copyCode(this)">📋 Copy</button>
+                </div>
+            </div>
+            <div class="file-body">
+                <pre id="code-main">package com.hariom.hardpunch;
+
+import android.content.res.AssetFileDescriptor;
+import android.media.AudioAttributes;
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
+public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener {
+
+    // ---- UI ----
+    private TextView songTitle, currentTime, totalTime;
+    private ImageButton btnPlay, btnPrev, btnNext, btnShuffle, btnRepeat;
+    private SeekBar seekBar;
+
+    // ---- Player ----
+    private MediaPlayer mediaPlayer;
+    private List&lt;String&gt; songList = new ArrayList&lt;&gt;();
+    private int currentIndex = 0;
+    private boolean isShuffle = false;
+    private boolean isRepeat = false;
+    private boolean isPlaying = false;
+    private Handler handler = new Handler();
+    private Runnable updateSeekRunnable;
+
+    // ---- Assets songs (add your .mp3 files to assets/) ----
+    private static final String[] SONG_FILES = {
+            "hard_punch_1.mp3",
+            "hard_punch_2.mp3",
+            "hard_punch_3.mp3",
+            "hard_punch_4.mp3",
+            "hard_punch_5.mp3"
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // init UI
+        songTitle = findViewById(R.id.songTitle);
+        currentTime = findViewById(R.id.currentTime);
+        totalTime = findViewById(R.id.totalTime);
+        seekBar = findViewById(R.id.seekBar);
+        btnPlay = findViewById(R.id.btnPlay);
+        btnPrev = findViewById(R.id.btnPrev);
+        btnNext = findViewById(R.id.btnNext);
+        btnShuffle = findViewById(R.id.btnShuffle);
+        btnRepeat = findViewById(R.id.btnRepeat);
+
+        // load song list from assets
+        loadSongList();
+
+        // setup media player
+        initMediaPlayer();
+
+        // click listeners
+        btnPlay.setOnClickListener(v -> togglePlayPause());
+        btnPrev.setOnClickListener(v -> playPrevious());
+        btnNext.setOnClickListener(v -> playNext());
+        btnShuffle.setOnClickListener(v -> toggleShuffle());
+        btnRepeat.setOnClickListener(v -> toggleRepeat());
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && mediaPlayer != null) {
+                    mediaPlayer.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                if (mediaPlayer != null) {
+                    handler.removeCallbacks(updateSeekRunnable);
+                }
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (mediaPlayer != null) {
+                    updateSeekBar();
+                }
+            }
+        });
+
+        // play first song
+        if (!songList.isEmpty()) {
+            playSong(currentIndex);
+        } else {
+            Toast.makeText(this, "No songs found in assets/", Toast.LENGTH_LONG).show();
+        }
+
+        // apply glossy animation to buttons
+        applyGlossyAnimations();
     }
-    
-    if(localStorage.getItem('theme') === 'light') {
-      document.body.classList.add('light');
+
+    private void loadSongList() {
+        songList.clear();
+        try {
+            String[] assets = getAssets().list("");
+            if (assets != null) {
+                for (String file : assets) {
+                    if (file.endsWith(".mp3") || file.endsWith(".wav") || file.endsWith(".ogg")) {
+                        songList.add(file);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // fallback if no assets found
+        if (songList.isEmpty()) {
+            Collections.addAll(songList, SONG_FILES);
+        }
     }
-    
-    // File Upload Handler
-    document.getElementById('fileInput').addEventListener('change', function(e) {
-      const fileList = document.getElementById('fileList');
-      
-      for(let file of e.target.files) {
-        uploadedFiles.push(file);
-        
-        const div = document.createElement('div');
-        div.className = 'apk-card';
-        
-        const isAPK = file.name.endsWith('.apk');
-        const icon = isAPK ? 'fa-android' : 'fa-file';
-        const sizeMB = (file.size / (1024*1024)).toFixed(2);
-        
-        div.innerHTML = `
-          <div class="apk-icon"><i class="fab ${icon}"></i></div>
-          <div class="apk-info">
-            <div class="apk-name">${file.name}</div>
-            <div class="apk-size">Size: ${sizeMB} MB | Type: ${file.type || 'application/apk'}</div>
-          </div>
-          <button class="download-btn" onclick="downloadFile('${file.name}')">
-            <i class="fas fa-download"></i>
-          </button>
-        `;
-        fileList.appendChild(div);
-      }
-      
-      updateStats();
-    });
-    
-    function updateStats() {
-      document.getElementById('totalFiles').textContent = uploadedFiles.length;
-      const totalMB = uploadedFiles.reduce((sum, f) => sum + f.size, 0) / (1024*1024);
-      document.getElementById('totalSize').textContent = totalMB.toFixed(2) + ' MB';
+
+    private void initMediaPlayer() {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioAttributes(
+                new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .build()
+        );
+        mediaPlayer.setOnCompletionListener(this);
     }
-    
-    function downloadFile(name) {
-      alert('> Download started: ' + name + '\n\nNote: Ye demo hai. Real me Firebase/Server lagana padega.');
+
+    private void playSong(int index) {
+        if (index < 0 || index >= songList.size()) return;
+        currentIndex = index;
+        String fileName = songList.get(index);
+
+        try {
+            initMediaPlayer();
+            AssetFileDescriptor afd = getAssets().openFd(fileName);
+            mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            afd.close();
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            isPlaying = true;
+            updatePlayButton();
+
+            String title = fileName.replace(".mp3", "").replace(".wav", "").replace(".ogg", "")
+                    .replace("_", " ").toUpperCase();
+            songTitle.setText(title);
+
+            seekBar.setMax(mediaPlayer.getDuration());
+            totalTime.setText(formatTime(mediaPlayer.getDuration()));
+            updateSeekBar();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error playing: " + fileName, Toast.LENGTH_SHORT).show();
+        }
     }
-    
-    function uploadToServer() {
-      if(uploadedFiles.length === 0) {
-        alert('> ERROR: Pehle files select karo!');
-        return;
-      }
-      alert(`> UPLOADING ${uploadedFiles.length} FILES...\n\nBackend chahiye? Firebase setup kar du?`);
-      // Yaha tu Firebase ya apna server ka code daal sakta hai
+
+    private void togglePlayPause() {
+        if (mediaPlayer == null) return;
+        if (isPlaying) {
+            mediaPlayer.pause();
+            isPlaying = false;
+        } else {
+            mediaPlayer.start();
+            isPlaying = true;
+        }
+        updatePlayButton();
+        updateSeekBar();
     }
-    
-    document.getElementById('searchInput').addEventListener('input', function(e) {
-      const term = e.target.value.toLowerCase();
-      document.querySelectorAll('.apk-card').forEach(card => {
-        const name = card.querySelector('.apk-name').textContent.toLowerCase();
-        card.style.display = name.includes(term) ? 'flex' : 'none';
-      });
-    });
-  </script>
+
+    private void playNext() {
+        if (songList.isEmpty()) return;
+        int next = isShuffle ? new Random().nextInt(songList.size()) : (currentIndex + 1) % songList.size();
+        playSong(next);
+    }
+
+    private void playPrevious() {
+        if (songList.isEmpty()) return;
+        int prev = isShuffle ? new Random().nextInt(songList.size()) : (currentIndex - 1 + songList.size()) % songList.size();
+        playSong(prev);
+    }
+
+    private void toggleShuffle() {
+        isShuffle = !isShuffle;
+        btnShuffle.setColorFilter(isShuffle ?
+                ContextCompat.getColor(this, R.color.green_accent) :
+                ContextCompat.getColor(this, R.color.icon_inactive));
+        Toast.makeText(this, isShuffle ? "🔀 Shuffle ON" : "🔀 Shuffle OFF", Toast.LENGTH_SHORT).show();
+    }
+
+    private void toggleRepeat() {
+        isRepeat = !isRepeat;
+        btnRepeat.setColorFilter(isRepeat ?
+                ContextCompat.getColor(this, R.color.green_accent) :
+                ContextCompat.getColor(this, R.color.icon_inactive));
+        Toast.makeText(this, isRepeat ? "🔁 Repeat ON" : "🔁 Repeat OFF", Toast.LENGTH_SHORT).show();
+    }
+
+    private void updatePlayButton() {
+        btnPlay.setImageResource(isPlaying ? R.drawable.ic_pause : R.drawable.ic_play);
+    }
+
+    private void updateSeekBar() {
+        if (mediaPlayer == null) return;
+        handler.removeCallbacks(updateSeekRunnable);
+        updateSeekRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (mediaPlayer != null && isPlaying) {
+                    int pos = mediaPlayer.getCurrentPosition();
+                    seekBar.setProgress(pos);
+                    currentTime.setText(formatTime(pos));
+                    handler.postDelayed(this, 300);
+                } else if (mediaPlayer != null && !isPlaying) {
+                    // still update once
+                    int pos = mediaPlayer.getCurrentPosition();
+                    seekBar.setProgress(pos);
+                    currentTime.setText(formatTime(pos));
+                    handler.postDelayed(this, 500);
+                }
+            }
+        };
+        handler.post(updateSeekRunnable);
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        if (isRepeat) {
+            playSong(currentIndex);
+        } else {
+            playNext();
+        }
+    }
+
+    private String formatTime(int millis) {
+        int sec = (millis / 1000) % 60;
+        int min = (millis / 1000) / 60;
+        return String.format("%02d:%02d", min, sec);
+    }
+
+    private void applyGlossyAnimations() {
+        Animation pulse = AnimationUtils.loadAnimation(this, R.anim.glossy_pulse);
+        btnPlay.startAnimation(pulse);
+        btnPrev.startAnimation(pulse);
+        btnNext.startAnimation(pulse);
+        btnShuffle.startAnimation(pulse);
+        btnRepeat.startAnimation(pulse);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mediaPlayer != null && isPlaying) {
+            mediaPlayer.pause();
+            isPlaying = false;
+            updatePlayButton();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mediaPlayer != null && !isPlaying) {
+            // optionally resume? we keep paused state.
+        }
+    }
+}</pre>
+                <div class="note">🎵 <strong>Full player:</strong> Play/Pause · Next · Prev · Shuffle · Repeat · SeekBar · songs from <code>assets/</code></div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 4. BubbleView.java (Custom View)                             -->
+        <!-- ============================================================ -->
+        <div class="file-card">
+            <div class="file-header" onclick="toggleBody(this)">
+                <h2>☕ BubbleView.java</h2>
+                <div class="file-header-right">
+                    <span class="path">/java/com/hariom/hardpunch/</span>
+                    <span class="lang">Java</span>
+                    <button class="copy-btn" onclick="event.stopPropagation();copyCode(this)">📋 Copy</button>
+                </div>
+            </div>
+            <div class="file-body">
+                <pre id="code-bubble">package com.hariom.hardpunch;
+
+import android.animation.ValueAnimator;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RadialGradient;
+import android.graphics.Shader;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.animation.LinearInterpolator;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class BubbleView extends View {
+
+    private List&lt;Bubble&gt; bubbles = new ArrayList&lt;&gt;();
+    private Random random = new Random();
+    private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private ValueAnimator animator;
+    private boolean running = false;
+
+    private static final int NUM_BUBBLES = 28;
+    private static final int MAX_RADIUS = 90;
+    private static final int MIN_RADIUS = 18;
+    private static final int MAX_SPEED = 6;
+    private static final int MIN_SPEED = 1;
+
+    public BubbleView(Context context) {
+        super(context);
+        init();
+    }
+
+    public BubbleView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public BubbleView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init() {
+        setWillNotDraw(false);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setAntiAlias(true);
+        generateBubbles();
+    }
+
+    private void generateBubbles() {
+        bubbles.clear();
+        int w = getWidth() > 0 ? getWidth() : 600;
+        int h = getHeight() > 0 ? getHeight() : 1000;
+        for (int i = 0; i < NUM_BUBBLES; i++) {
+            int radius = MIN_RADIUS + random.nextInt(MAX_RADIUS - MIN_RADIUS);
+            int x = random.nextInt(w - radius * 2) + radius;
+            int y = random.nextInt(h - radius * 2) + radius;
+            int speedX = (random.nextBoolean() ? 1 : -1) * (MIN_SPEED + random.nextInt(MAX_SPEED - MIN_SPEED));
+            int speedY = (random.nextBoolean() ? 1 : -1) * (MIN_SPEED + random.nextInt(MAX_SPEED - MIN_SPEED));
+            int color = Color.argb(140 + random.nextInt(80),
+                    20 + random.nextInt(60),
+                    180 + random.nextInt(75),
+                    20 + random.nextInt(60));
+            bubbles.add(new Bubble(x, y, radius, speedX, speedY, color));
+        }
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (bubbles.isEmpty() || oldw == 0) {
+            generateBubbles();
+        }
+    }
+
+    public void startAnimation() {
+        if (running) return;
+        running = true;
+        animator = ValueAnimator.ofFloat(0f, 1f);
+        animator.setDuration(40);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.addUpdateListener(animation -> {
+            if (running) {
+                updateBubbles();
+                invalidate();
+            }
+        });
+        animator.start();
+    }
+
+    public void stopAnimation() {
+        running = false;
+        if (animator != null) {
+            animator.cancel();
+            animator = null;
+        }
+    }
+
+    private void updateBubbles() {
+        int w = getWidth();
+        int h = getHeight();
+        for (Bubble b : bubbles) {
+            b.x += b.speedX;
+            b.y += b.speedY;
+
+            // bounce
+            if (b.x - b.radius < 0 || b.x + b.radius > w) {
+                b.speedX = -b.speedX;
+                b.x += b.speedX;
+            }
+            if (b.y - b.radius < 0 || b.y + b.radius > h) {
+                b.speedY = -b.speedY;
+                b.y += b.speedY;
+            }
+
+            // keep inside
+            b.x = Math.max(b.radius, Math.min(w - b.radius, b.x));
+            b.y = Math.max(b.radius, Math.min(h - b.radius, b.y));
+        }
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        // dark background with subtle gradient
+        canvas.drawColor(Color.parseColor("#0a1218"));
+
+        for (Bubble b : bubbles) {
+            // radial gradient for glossy 3D effect
+            RadialGradient gradient = new RadialGradient(
+                    b.x - b.radius * 0.25f,
+                    b.y - b.radius * 0.25f,
+                    b.radius,
+                    b.color,
+                    darkenColor(b.color, 0.5f),
+                    Shader.TileMode.CLAMP
+            );
+            paint.setShader(gradient);
+            paint.setColor(b.color);
+            canvas.drawCircle(b.x, b.y, b.radius, paint);
+
+            // highlight (glossy shine)
+            paint.setShader(null);
+            paint.setColor(Color.argb(60, 255, 255, 255));
+            canvas.drawCircle(b.x - b.radius * 0.3f, b.y - b.radius * 0.3f, b.radius * 0.35f, paint);
+        }
+    }
+
+    private int darkenColor(int color, float factor) {
+        int a = Color.alpha(color);
+        int r = (int) (Color.red(color) * factor);
+        int g = (int) (Color.green(color) * factor);
+        int b = (int) (Color.blue(color) * factor);
+        return Color.argb(a, Math.max(0, r), Math.max(0, g), Math.max(0, b));
+    }
+
+    // ---- inner class ----
+    private static class Bubble {
+        int x, y, radius;
+        int speedX, speedY;
+        int color;
+
+        Bubble(int x, int y, int radius, int speedX, int speedY, int color) {
+            this.x = x;
+            this.y = y;
+            this.radius = radius;
+            this.speedX = speedX;
+            this.speedY = speedY;
+            this.color = color;
+        }
+    }
+}</pre>
+                <div class="note">🟢 <strong>BubbleView</strong> draws floating glossy green bubbles with 3D gradient + highlight. Auto-bounce.</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 5. activity_splash.xml                                       -->
+        <!-- ============================================================ -->
+        <div class="file-card">
+            <div class="file-header" onclick="toggleBody(this)">
+                <h2>📐 activity_splash.xml</h2>
+                <div class="file-header-right">
+                    <span class="path">/res/layout/</span>
+                    <span class="lang">Layout</span>
+                    <button class="copy-btn" onclick="event.stopPropagation();copyCode(this)">📋 Copy</button>
+                </div>
+            </div>
+            <div class="file-body">
+                <pre id="code-splash-layout">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0a1218"&gt;
+
+    &lt;com.hariom.hardpunch.BubbleView
+        android:id="@+id/bubbleView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" /&gt;
+
+    &lt;!-- overlay that fades in at the end --&gt;
+    &lt;View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0a1218"
+        android:alpha="0.0" /&gt;
+
+    &lt;!-- center brand text --&gt;
+    &lt;LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:alpha="0.95"&gt;
+
+        &lt;TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚡"
+            android:textSize="64sp"
+            android:textColor="#60ff90"
+            android:shadowColor="#00ff60"
+            android:shadowRadius="40"
+            android:layout_marginBottom="8dp"/&gt;
+
+        &lt;TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="HARIOM HARD"
+            android:textSize="28sp"
+            android:textColor="#e0ffe0"
+            android:textStyle="bold"
+            android:letterSpacing="0.08"
+            android:fontFamily="sans-serif-black"
+            android:shadowColor="#00ff6040"
+            android:shadowRadius="30"/&gt;
+
+        &lt;TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MUSIC PUNCH"
+            android:textSize="22sp"
+            android:textColor="#80d0a0"
+            android:textStyle="bold"
+            android:letterSpacing="0.15"
+            android:fontFamily="sans-serif-black"
+            android:shadowColor="#00ff6040"
+            android:shadowRadius="24"/&gt;
+
+    &lt;/LinearLayout&gt;
+
+&lt;/FrameLayout&gt;</pre>
+                <div class="note">🟢 Splash layout: <code>BubbleView</code> fullscreen + centered brand text with glow.</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 6. activity_main.xml                                         -->
+        <!-- ============================================================ -->
+        <div class="file-card">
+            <div class="file-header" onclick="toggleBody(this)">
+                <h2>📐 activity_main.xml</h2>
+                <div class="file-header-right">
+                    <span class="path">/res/layout/</span>
+                    <span class="lang">Layout</span>
+                    <button class="copy-btn" onclick="event.stopPropagation();copyCode(this)">📋 Copy</button>
+                </div>
+            </div>
+            <div class="file-body">
+                <pre id="code-main-layout">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_hard_gradient"
+    android:padding="24dp"
+    android:gravity="center_horizontal"&gt;
+
+    &lt;!-- Header --&gt;
+    &lt;TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚡ HARD PUNCH"
+        android:textSize="18sp"
+        android:textColor="#60ff90"
+        android:textStyle="bold"
+        android:letterSpacing="0.12"
+        android:fontFamily="sans-serif-black"
+        android:layout_marginTop="28dp"
+        android:layout_marginBottom="8dp"
+        android:shadowColor="#00ff6040"
+        android:shadowRadius="24"/&gt;
+
+    &lt;View
+        android:layout_width="60dp"
+        android:layout_height="3dp"
+        android:background="@drawable/glossy_line"
+        android:layout_marginBottom="40dp"/&gt;
+
+    &lt;!-- Album Art Placeholder (glossy) --&gt;
+    &lt;FrameLayout
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_marginBottom="28dp"
+        android:background="@drawable/glossy_circle_bg"&gt;
+
+        &lt;TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="🎵"
+            android:textSize="80sp"
+            android:textColor="#40ff90"
+            android:shadowColor="#00ff6040"
+            android:shadowRadius="50"/&gt;
+    &lt;/FrameLayout&gt;
+
+    &lt;!-- Song Title --&gt;
+    &lt;TextView
+        android:id="@+id/songTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="HARD PUNCH 1"
+        android:textSize="20sp"
+        android:textColor="#e8f8f0"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:fontFamily="sans-serif-black"
+        android:shadowColor="#00000060"
+        android:shadowRadius="12"
+        android:layout_marginBottom="4dp"/&gt;
+
+    &lt;TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="●  ASSETS  ●"
+        android:textSize="10sp"
+        android:textColor="#4f7a6a"
+        android:gravity="center"
+        android:letterSpacing="0.25"
+        android:layout_marginBottom="18dp"/&gt;
+
+    &lt;!-- SeekBar --&gt;
+    &lt;LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="6dp"&gt;
+
+        &lt;TextView
+            android:id="@+id/currentTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textSize="11sp"
+            android:textColor="#7aaa9a"
+            android:layout_marginEnd="10dp"/&gt;
+
+        &lt;SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:progressDrawable="@drawable/seekbar_glossy"
+            android:thumb="@drawable/seekbar_thumb"
+            android:max="1000"/&gt;
+
+        &lt;TextView
+            android:id="@+id/totalTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textSize="11sp"
+            android:textColor="#7aaa9a"
+            android:layout_marginStart="10dp"/&gt;
+    &lt;/LinearLayout&gt;
+
+    &lt;!-- Controls --&gt;
+    &lt;LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:weightSum="5"&gt;
+
+        &lt;ImageButton
+            android:id="@+id/btnShuffle"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:background="@drawable/glossy_btn_bg"
+            android:src="@drawable/ic_shuffle"
+            android:scaleType="centerInside"
+            android:padding="12dp"
+            android:colorFilter="#5a7a7a"
+            android:layout_marginEnd="8dp"/&gt;
+
+        &lt;ImageButton
+            android:id="@+id/btnPrev"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:background="@drawable/glossy_btn_bg"
+            android:src="@drawable/ic_prev"
+            android:scaleType="centerInside"
+            android:padding="14dp"
+            android:colorFilter="#c8e8e0"
+            android:layout_marginEnd="8dp"/&gt;
+
+        &lt;ImageButton
+            android:id="@+id/btnPlay"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_weight="1.2"
+            android:background="@drawable/glossy_btn_play_bg"
+            android:src="@drawable/ic_play"
+            android:scaleType="centerInside"
+            android:padding="16dp"
+            android:colorFilter="#ffffff"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"/&gt;
+
+        &lt;ImageButton
+            android:id="@+id/btnNext"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:background="@drawable/glossy_btn_bg"
+            android:src="@drawable/ic_next"
+            android:scaleType="centerInside"
+            android:padding="14dp"
+            android:colorFilter="#c8e8e0"
+            android:layout_marginStart="8dp"/&gt;
+
+        &lt;ImageButton
+            android:id="@+id/btnRepeat"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:background="@drawable/glossy_btn_bg"
+            android:src="@drawable/ic_repeat"
+            android:scaleType="centerInside"
+            android:padding="12dp"
+            android:colorFilter="#5a7a7a"
+            android:layout_marginStart="8dp"/&gt;
+
+    &lt;/LinearLayout&gt;
+
+    &lt;TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="◆  HARD GLOSSY  ◆"
+        android:textSize="9sp"
+        android:textColor="#2a4a3a"
+        android:letterSpacing="0.35"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="8dp"/&gt;
+
+&lt;/LinearLayout&gt;</pre>
+                <div class="note">🎛️ <strong>Main UI:</strong> glossy dark gradient · album art circle · seekbar · 5-button control row.</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 7. drawable resources (glossy backgrounds)                    -->
+        <!-- ============================================================ -->
+        <div class="file-card">
+            <div class="file-header" onclick="toggleBody(this)">
+                <h2>🎨 drawable / glossy resources</h2>
+                <div class="file-header-right">
+                    <span class="path">/res/drawable/</span>
+                    <span class="lang">XML</span>
+                    <button class="copy-btn" onclick="event.stopPropagation();copyCode(this)">📋 Copy</button>
+                </div>
+            </div>
+            <div class="file-body">
+                <pre id="code-drawables">&lt;!-- bg_hard_gradient.xml (res/drawable/) --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;shape xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;gradient
+        android:startColor="#0b121c"
+        android:endColor="#1a2a2a"
+        android:angle="135"
+        android:type="linear"/&gt;
+    &lt;stroke android:width="1dp" android:color="#20ffffff"/&gt;
+&lt;/shape&gt;
+
+&lt;!-- glossy_circle_bg.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;shape xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;solid android:color="#0f1a1a"/&gt;
+    &lt;stroke android:width="2dp" android:color="#30ff9060"/&gt;
+    &lt;corners android:radius="120dp"/&gt;
+    &lt;padding android:padding="2dp"/&gt;
+&lt;/shape&gt;
+
+&lt;!-- glossy_btn_bg.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;shape xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;solid android:color="#1a2a2a"/&gt;
+    &lt;stroke android:width="1.5dp" android:color="#30ffffff"/&gt;
+    &lt;corners android:radius="30dp"/&gt;
+    &lt;gradient
+        android:startColor="#2a3a3a"
+        android:endColor="#0f1a1a"
+        android:angle="45"
+        android:type="linear"/&gt;
+&lt;/shape&gt;
+
+&lt;!-- glossy_btn_play_bg.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;shape xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;solid android:color="#1a3a2a"/&gt;
+    &lt;stroke android:width="2dp" android:color="#60ff90"/&gt;
+    &lt;corners android:radius="40dp"/&gt;
+    &lt;gradient
+        android:startColor="#2a5a3a"
+        android:endColor="#0f2a1a"
+        android:angle="135"
+        android:type="linear"/&gt;
+&lt;/shape&gt;
+
+&lt;!-- glossy_line.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;shape xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;solid android:color="#30ff9060"/&gt;
+    &lt;corners android:radius="4dp"/&gt;
+    &lt;gradient
+        android:startColor="#00ff9060"
+        android:endColor="#60ff90"
+        android:angle="0"
+        android:type="linear"/&gt;
+&lt;/shape&gt;
+
+&lt;!-- seekbar_glossy.xml (progress) --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;layer-list xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;item android:id="@android:id/background"&gt;
+        &lt;shape&gt;
+            &lt;solid android:color="#1a2a2a"/&gt;
+            &lt;corners android:radius="6dp"/&gt;
+        &lt;/shape&gt;
+    &lt;/item&gt;
+    &lt;item android:id="@android:id/progress"&gt;
+        &lt;clip&gt;
+            &lt;shape&gt;
+                &lt;solid android:color="#40ff90"/&gt;
+                &lt;corners android:radius="6dp"/&gt;
+                &lt;gradient
+                    android:startColor="#60ff90"
+                    android:endColor="#20ff60"
+                    android:angle="0"
+                    android:type="linear"/&gt;
+            &lt;/shape&gt;
+        &lt;/clip&gt;
+    &lt;/item&gt;
+&lt;/layer-list&gt;
+
+&lt;!-- seekbar_thumb.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;shape xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;solid android:color="#60ff90"/&gt;
+    &lt;size android:width="18dp" android:height="18dp"/&gt;
+    &lt;corners android:radius="9dp"/&gt;
+    &lt;stroke android:width="2dp" android:color="#b0ffd0"/&gt;
+    &lt;gradient
+        android:startColor="#80ffa0"
+        android:endColor="#20ff60"
+        android:angle="45"
+        android:type="linear"/&gt;
+&lt;/shape&gt;</pre>
+                <div class="note">✨ All drawables for glossy dark theme · green accents · gradient shine.</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 8. colors.xml / strings.xml / styles.xml                     -->
+        <!-- ============================================================ -->
+        <div class="file-card">
+            <div class="file-header" onclick="toggleBody(this)">
+                <h2>🎨 values / colors · strings · styles</h2>
+                <div class="file-header-right">
+                    <span class="path">/res/values/</span>
+                    <span class="lang">XML</span>
+                    <button class="copy-btn" onclick="event.stopPropagation();copyCode(this)">📋 Copy</button>
+                </div>
+            </div>
+            <div class="file-body">
+                <pre id="code-values">&lt;!-- colors.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;resources&gt;
+    &lt;color name="bg_dark"&gt;#0b1218&lt;/color&gt;
+    &lt;color name="bg_card"&gt;#141e24&lt;/color&gt;
+    &lt;color name="green_accent"&gt;#40ff90&lt;/color&gt;
+    &lt;color name="green_dark"&gt;#0f2a1a&lt;/color&gt;
+    &lt;color name="text_primary"&gt;#e8f8f0&lt;/color&gt;
+    &lt;color name="text_secondary"&gt;#7aaa9a&lt;/color&gt;
+    &lt;color name="icon_inactive"&gt;#4a6a5a&lt;/color&gt;
+    &lt;color name="icon_active"&gt;#60ff90&lt;/color&gt;
+    &lt;color name="glossy_shine"&gt;#30ffffff&lt;/color&gt;
+&lt;/resources&gt;
+
+&lt;!-- strings.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;resources&gt;
+    &lt;string name="app_name"&gt;HARIOM HARD MUSIC PUNCH&lt;/string&gt;
+&lt;/resources&gt;
+
+&lt;!-- styles.xml (themes) --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;resources xmlns:tools="http://schemas.android.com/tools"&gt;
+
+    &lt;style name="Theme.HardPunch" parent="Theme.AppCompat.NoActionBar"&gt;
+        &lt;item name="android:windowBackground"&gt;@color/bg_dark&lt;/item&gt;
+        &lt;item name="android:statusBarColor"&gt;@color/bg_dark&lt;/item&gt;
+        &lt;item name="android:navigationBarColor"&gt;@color/bg_dark&lt;/item&gt;
+        &lt;item name="android:windowAnimationStyle"&gt;@style/WindowAnimation&lt;/item&gt;
+    &lt;/style&gt;
+
+    &lt;style name="Theme.Splash" parent="Theme.HardPunch"&gt;
+        &lt;item name="android:windowBackground"&gt;@color/bg_dark&lt;/item&gt;
+        &lt;item name="android:statusBarColor"&gt;@color/bg_dark&lt;/item&gt;
+        &lt;item name="android:windowFullscreen"&gt;true&lt;/item&gt;
+    &lt;/style&gt;
+
+    &lt;style name="WindowAnimation"&gt;
+        &lt;item name="android:windowEnterAnimation"&gt;@anim/fade_in&lt;/item&gt;
+        &lt;item name="android:windowExitAnimation"&gt;@anim/fade_out&lt;/item&gt;
+    &lt;/style&gt;
+
+&lt;/resources&gt;</pre>
+                <div class="note">🎨 Dark theme with green accent · fullscreen splash · fade transitions.</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 9. anim / glossy_pulse                                       -->
+        <!-- ============================================================ -->
+        <div class="file-card">
+            <div class="file-header" onclick="toggleBody(this)">
+                <h2>🌀 anim / glossy_pulse.xml</h2>
+                <div class="file-header-right">
+                    <span class="path">/res/anim/</span>
+                    <span class="lang">XML</span>
+                    <button class="copy-btn" onclick="event.stopPropagation();copyCode(this)">📋 Copy</button>
+                </div>
+            </div>
+            <div class="file-body">
+                <pre id="code-anim">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;set xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;scale
+        android:fromXScale="1.0"
+        android:toXScale="1.06"
+        android:fromYScale="1.0"
+        android:toYScale="1.06"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:duration="1200"
+        android:repeatMode="reverse"
+        android:repeatCount="infinite"
+        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/&gt;
+&lt;/set&gt;
+
+&lt;!-- fade_in.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;alpha xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromAlpha="0.0"
+    android:toAlpha="1.0"
+    android:duration="400"/&gt;
+
+&lt;!-- fade_out.xml --&gt;
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;alpha xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromAlpha="1.0"
+    android:toAlpha="0.0"
+    android:duration="400"/&gt;</pre>
+                <div class="note">🌀 <strong>glossy_pulse</strong> gives buttons a subtle breathing glow effect.</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 10. Vector Icons (ic_play, ic_pause, etc)                    -->
+        <!-- ============================================================ -->
+        <div class="file-card">
+            <div class="file-header" onclick="toggleBody(this)">
+                <h2>🖼️ vector icons (ic_*.xml)</h2>
+                <div class="file-header-right">
+                    <span class="path">/res/drawable/</span>
+                    <span class="lang">Vector</span>
+                    <button class="copy-btn" onclick="event.stopPropagation();copyCode(this)">📋 Copy</button>
+                </div>
+            </div>
+            <div class="file-body">
+                <pre id="code-icons">&lt;!-- ic_play.xml --&gt;
+&lt;vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"&gt;
+    &lt;path android:fillColor="#ffffff" android:pathData="M8,5v14l11,-7z"/&gt;
+&lt;/vector&gt;
+
+&lt;!-- ic_pause.xml --&gt;
+&lt;vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"&gt;
+    &lt;path android:fillColor="#ffffff" android:pathData="M6,19h4V5H6v14zm8,-14v14h4V5h-4z"/&gt;
+&lt;/vector&gt;
+
+&lt;!-- ic_next.xml --&gt;
+&lt;vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"&gt;
+    &lt;path android:fillColor="#c8e8e0" android:pathData="M6,18l8.5,-6L6,6v12zM16,6v12h2V6h-2z"/&gt;
+&lt;/vector&gt;
+
+&lt;!-- ic_prev.xml --&gt;
+&lt;vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"&gt;
+    &lt;path android:fillColor="#c8e8e0" android:pathData="M6,6h2v12H6zm3.5,6l8.5,6V6z"/&gt;
+&lt;/vector&gt;
+
+&lt;!-- ic_shuffle.xml --&gt;
+&lt;vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"&gt;
+    &lt;path android:fillColor="#5a7a7a" android:pathData="M10.59,9.17L5.41,4 4,5.41l5.17,5.17 1.42,-1.41zM14.5,4l2.04,2.04L4,18.59 5.41,20 17.96,7.46 20,9.5V4h-5.5zM16.5,13.91L15.09,15.33 17.96,18.2 15.46,20.7 20,20.7V15.21L18.54,16.67 16.5,13.91z"/&gt;
+&lt;/vector&gt;
+
+&lt;!-- ic_repeat.xml --&gt;
+&lt;vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"&gt;
+    &lt;path android:fillColor="#5a7a7a" android:pathData="M7,7h10v3l4,-4 -4,-4v3H5v6h2V7zM17,17H7v-3l-4,4 4,4v-3h12v-6h-2v4z"/&gt;
+&lt;/vector&gt;</pre>
+                <div class="note">🎯 All vector icons · color tint controlled by <code>setColorFilter()</code> in MainActivity.</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 11. assets / songs placeholder                               -->
+        <!-- ============================================================ -->
+        <div class="file-card">
+            <div class="file-header" onclick="toggleBody(this)">
+                <h2>📁 assets / songs</h2>
+                <div class="file-header-right">
+                    <span class="path">/app/src/main/assets/</span>
+                    <span class="lang">MP3</span>
+                    <button class="copy-btn" onclick="event.stopPropagation();copyCode(this)">📋 Copy</button>
+                </div>
+            </div>
+            <div class="file-body">
+                <pre id="code-assets"># Place your .mp3 / .wav / .ogg files inside:
+#   /app/src/main/assets/
+#
+# The app will auto-detect any audio file in assets/
+# and build the playlist dynamically.
+#
+# Recommended filenames (or use your own):
+#   hard_punch_1.mp3
+#   hard_punch_2.mp3
+#   hard_punch_3.mp3
+#   hard_punch_4.mp3
+#   hard_punch_5.mp3
+#
+# If no assets are found, the app falls back to these names.
+# Just drop your real songs and they'll play!</pre>
+                <div class="note">📂 <strong>assets/</strong> – drop your MP3s here. The app scans and plays them automatically.</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 12. build.gradle (app level)                                 -->
+        <!-- ============================================================ -->
+        <div class="file-card">
+            <div class="file-header" onclick="toggleBody(this)">
+                <h2>⚙️ build.gradle (app)</h2>
+                <div class="file-header-right">
+                    <span class="path">/app/</span>
+                    <span class="lang">Gradle</span>
+                    <button class="copy-btn" onclick="event.stopPropagation();copyCode(this)">📋 Copy</button>
+                </div>
+            </div>
+            <div class="file-body">
+                <pre id="code-gradle">plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.hariom.hardpunch'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.hariom.hardpunch"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.10.0'
+}</pre>
+                <div class="note">⚙️ Minimal deps · AndroidX only · <code>compileSdk 34</code> · Java 8.</div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 13. project structure overview                               -->
+        <!-- ============================================================ -->
+        <div class="file-card" style="border-color:rgba(0,255,120,0.08);">
+            <div class="file-header" onclick="toggleBody(this)">
+                <h2>📁 Project Structure</h2>
+                <div class="file-header-right">
+                    <span class="path">/</span>
+                    <span class="lang">tree</span>
+                    <button class="copy-btn" onclick="event.stopPropagation();copyCode(this)">📋 Copy</button>
+                </div>
+            </div>
+            <div class="file-body">
+                <pre style="color:#7a9a8a;font-size:0.7rem;">HARIOM_HARD_MUSIC_PUNCH/
+├── app/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/hariom/hardpunch/
+│   │   │   │   ├── SplashActivity.java
+│   │   │   │   ├── MainActivity.java
+│   │   │   │   └── BubbleView.java
+│   │   │   ├── res/
+│   │   │   │   ├── layout/
+│   │   │   │   │   ├── activity_splash.xml
+│   │   │   │   │   └── activity_main.xml
+│   │   │   │   ├── drawable/
+│   │   │   │   │   ├── bg_hard_gradient.xml
+│   │   │   │   │   ├── glossy_circle_bg.xml
+│   │   │   │   │   ├── glossy_btn_bg.xml
+│   │   │   │   │   ├── glossy_btn_play_bg.xml
+│   │   │   │   │   ├── glossy_line.xml
+│   │   │   │   │   ├── seekbar_glossy.xml
+│   │   │   │   │   ├── seekbar_thumb.xml
+│   │   │   │   │   ├── ic_play.xml
+│   │   │   │   │   ├── ic_pause.xml
+│   │   │   │   │   ├── ic_next.xml
+│   │   │   │   │   ├── ic_prev.xml
+│   │   │   │   │   ├── ic_shuffle.xml
+│   │   │   │   │   └── ic_repeat.xml
+│   │   │   │   ├── values/
+│   │   │   │   │   ├── colors.xml
+│   │   │   │   │   ├── strings.xml
+│   │   │   │   │   └── styles.xml
+│   │   │   │   └── anim/
+│   │   │   │       ├── glossy_pulse.xml
+│   │   │   │       ├── fade_in.xml
+│   │   │   │       └── fade_out.xml
+│   │   │   ├── assets/
+│   │   │   │   ├── hard_punch_1.mp3   (your songs)
+│   │   │   │   ├── hard_punch_2.mp3
+│   │   │   │   └── ...
+│   │   │   └── AndroidManifest.xml
+│   │   └── build.gradle
+│   └── ...
+└── gradle...</pre>
+                <div class="note">📁 <strong>Complete structure</strong> – copy all files into your AIDE Pro project.</div>
+            </div>
+        </div>
+
+    </div><!-- /file-grid -->
+
+    <div style="max-width:900px;width:100%;margin-top:32px;padding:20px 0 40px;border-top:1px solid rgba(255,255,255,0.04);text-align:center;color:#2a4a3a;font-size:0.75rem;letter-spacing:0.5px;">
+        ⚡ HARIOM HARD MUSIC PUNCH · built for AIDE Pro · all files included
+    </div>
+
+    <script>
+        function toggleBody(header) {
+            const body = header.nextElementSibling;
+            if (body && body.classList.contains('file-body')) {
+                const isOpen = body.style.display !== 'none';
+                body.style.display = isOpen ? 'none' : 'block';
+            }
+        }
+
+        function copyCode(btn) {
+            const pre = btn.closest('.file-header').nextElementSibling.querySelector('pre');
+            if (!pre) return;
+            const text = pre.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const orig = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => btn.textContent = orig, 1800);
+            }).catch(() => {
+                // fallback
+                const range = document.createRange();
+                range.selectNode(pre);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+                const orig = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => btn.textContent = orig, 1800);
+            });
+        }
+
+        // expand first file by default
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstHeader = document.querySelector('.file-card .file-header');
+            if (firstHeader) {
+                // do nothing — keep all expanded for preview
+            }
+        });
+    </script>
+
 </body>
-</html>
+  </html>
